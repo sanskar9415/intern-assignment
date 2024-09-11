@@ -1,27 +1,51 @@
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 
 const UpdateModal = ({ isOpen, onRequestClose, onSave }) => {
   const [rank, setRank] = React.useState(1);
   const [percentile, setPercentile] = React.useState(30);
   const [score, setScore] = React.useState(10);
+  const modalRef = useRef(null); // Ref for the modal container
 
   const handleSave = () => {
     onSave({ rank, percentile, score });
     onRequestClose();
   };
 
+  const changeRank = (rank) => {
+    const newRank = Math.max(1, Math.min(500, Number(rank)));
+    setRank(newRank);
+  };
+
+  useEffect(() => {
+    function handleClickOutside(event) {
+      if (modalRef.current && !modalRef.current.contains(event.target)) {
+        onRequestClose();
+      }
+    }
+
+    if (isOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
+    } else {
+      document.removeEventListener('mousedown', handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [isOpen, onRequestClose]);
+
   if (!isOpen) return null;
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-      <div className="bg-white p-6 rounded-lg max-w-md w-full mx-4">
+      <div ref={modalRef} className="bg-white p-6 rounded-lg max-w-md w-full mx-4">
         <h2 className="text-xl font-bold mb-4">Update scores</h2>
         <div className="mb-4">
           <label className="block text-sm font-medium mb-2">Update your Rank</label>
           <input
             type="number"
             value={rank}
-            onChange={(e) => setRank(e.target.value)}
+            onChange={(e) => changeRank(e.target.value)}
             className="w-full border rounded-lg px-3 py-2"
           />
         </div>
@@ -30,7 +54,7 @@ const UpdateModal = ({ isOpen, onRequestClose, onSave }) => {
           <input
             type="number"
             value={percentile}
-            onChange={(e) => setPercentile(e.target.value)}
+            onChange={(e) => setPercentile(Number(e.target.value))}
             className="w-full border rounded-lg px-3 py-2"
           />
         </div>
@@ -39,7 +63,7 @@ const UpdateModal = ({ isOpen, onRequestClose, onSave }) => {
           <input
             type="number"
             value={score}
-            onChange={(e) => setScore(e.target.value)}
+            onChange={(e) => setScore(Number(e.target.value))}
             className="w-full border rounded-lg px-3 py-2"
           />
         </div>

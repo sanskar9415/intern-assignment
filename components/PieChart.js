@@ -16,7 +16,7 @@ const PieChart = ({ marks }) => {
         data: [correctAnswers, incorrectAnswers],
         backgroundColor: ['#4CAF50', '#F44336'],
         hoverBackgroundColor: ['#66BB6A', '#E57373'],
-        cutout: '70%', // This makes it a donut chart
+        cutout: '70%',
       },
     ],
   };
